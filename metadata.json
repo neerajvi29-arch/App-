@@ -1,0 +1,6 @@
+{
+  "name": "Step Tracker",
+  "description": "Intuitive step tracker with wearable sync, weekly health insights, social leaderboard, milestones, goal notifications, and cloud backup.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

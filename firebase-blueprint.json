@@ -1,0 +1,113 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "User profile with step goals, overall stats, and wearable sync configuration",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "description": "Google Auth UID of the user" },
+        "displayName": { "type": "string", "description": "Display name of the user" },
+        "email": { "type": "string", "description": "Email address of the user" },
+        "dailyGoal": { "type": "integer", "description": "Target steps per day (e.g. 10000)" },
+        "weeklyGoal": { "type": "integer", "description": "Target steps per week (e.g. 70000)" },
+        "totalSteps": { "type": "integer", "description": "Lifetime total steps accumulated" },
+        "currentStreak": { "type": "integer", "description": "Current consecutive days meeting goal" },
+        "bestStreak": { "type": "integer", "description": "Best consecutive days record" },
+        "connectedWearable": { "type": "string", "description": "Connected wearable device label or None" },
+        "lastSyncTimestamp": { "type": "string", "format": "date-time", "description": "Timestamp of last sync" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Server timestamp of creation" },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Server timestamp of update" }
+      },
+      "required": ["userId", "displayName", "dailyGoal", "createdAt", "updatedAt"]
+    },
+    "DailyLog": {
+      "title": "DailyLog",
+      "description": "Daily aggregated step record with metrics for distance, calories, and duration",
+      "type": "object",
+      "properties": {
+        "date": { "type": "string", "description": "ISO date YYYY-MM-DD" },
+        "userId": { "type": "string", "description": "Owner user ID" },
+        "steps": { "type": "integer", "description": "Steps taken on this date" },
+        "goal": { "type": "integer", "description": "Daily goal on this date" },
+        "calories": { "type": "integer", "description": "Estimated calories burned in kcal" },
+        "distanceMeters": { "type": "integer", "description": "Estimated distance traveled in meters" },
+        "activeMinutes": { "type": "integer", "description": "Active walking/running minutes" },
+        "source": { "type": "string", "description": "Sensor or wearable device source" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Timestamp of creation" },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Timestamp of update" }
+      },
+      "required": ["date", "userId", "steps", "goal", "createdAt", "updatedAt"]
+    },
+    "Milestone": {
+      "title": "Milestone",
+      "description": "Gamified achievement badge and milestone unlock tracking",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Milestone identifier" },
+        "userId": { "type": "string", "description": "Owner user ID" },
+        "title": { "type": "string", "description": "Title of achievement" },
+        "description": { "type": "string", "description": "Achievement condition" },
+        "requiredSteps": { "type": "integer", "description": "Steps required to unlock" },
+        "category": { "type": "string", "description": "Category e.g. daily, streak, total, explorer" },
+        "unlocked": { "type": "boolean", "description": "Whether milestone has been reached" },
+        "unlockedAt": { "type": "string", "format": "date-time", "description": "Timestamp when unlocked" },
+        "icon": { "type": "string", "description": "Material symbol or badge key" },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Timestamp of update" }
+      },
+      "required": ["id", "userId", "title", "requiredSteps", "category", "unlocked", "updatedAt"]
+    },
+    "LeaderboardEntry": {
+      "title": "LeaderboardEntry",
+      "description": "Public social leaderboard score entry allowing friends to compete daily and weekly",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "description": "User ID of the participant" },
+        "displayName": { "type": "string", "description": "Public display name" },
+        "todaySteps": { "type": "integer", "description": "Steps recorded today" },
+        "weeklySteps": { "type": "integer", "description": "Steps recorded during the current week" },
+        "streak": { "type": "integer", "description": "Current goal streak" },
+        "level": { "type": "integer", "description": "Gamified walker level based on total steps" },
+        "badge": { "type": "string", "description": "Current primary badge title" },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Timestamp of update" }
+      },
+      "required": ["userId", "displayName", "todaySteps", "weeklySteps", "streak", "level", "badge", "updatedAt"]
+    },
+    "CloudBackup": {
+      "title": "CloudBackup",
+      "description": "Encrypted or structured cloud backup snapshot for data security and cross-device restore",
+      "type": "object",
+      "properties": {
+        "backupId": { "type": "string", "description": "Unique snapshot ID" },
+        "userId": { "type": "string", "description": "Owner user ID" },
+        "backupName": { "type": "string", "description": "User visible name of backup snapshot" },
+        "totalDaysLogged": { "type": "integer", "description": "Number of daily logs backed up" },
+        "totalStepsLogged": { "type": "integer", "description": "Sum of steps across all backed up days" },
+        "summaryJson": { "type": "string", "description": "Serialized data snapshot payload" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Timestamp backup was created" }
+      },
+      "required": ["backupId", "userId", "backupName", "totalDaysLogged", "totalStepsLogged", "summaryJson", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "UserProfile",
+      "description": "User profile with step goals and configuration"
+    },
+    "/users/{userId}/daily_logs/{dateKey}": {
+      "schema": "DailyLog",
+      "description": "Daily step counts and health metrics for the user"
+    },
+    "/users/{userId}/milestones/{milestoneId}": {
+      "schema": "Milestone",
+      "description": "Gamified milestones and unlocked badges for the user"
+    },
+    "/users/{userId}/backups/{backupId}": {
+      "schema": "CloudBackup",
+      "description": "Cloud backup points for user data recovery"
+    },
+    "/leaderboard/{userId}": {
+      "schema": "LeaderboardEntry",
+      "description": "Public social leaderboard for friendly competition"
+    }
+  }
+}
